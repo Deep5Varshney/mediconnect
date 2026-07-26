@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel='stylesheet' href='./login.css'></link>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Edu+AU+VIC+WA+NT+Hand:wght@400..700&family=Jaini&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Lora:ital,wght@0,400..700;1,400..700&family=Special+Elite&display=swap" rel="stylesheet">
+    <title>SignIn</title>
+</head>
+<body>
+    <form id = "signup-form">
+        <div class="container cont2">
+            <div id ="card2">
+                <div class="heading head2">
+                    <h2>Sign In</h2>
+                </div>
+    
+                <div class="input-container cont2">
+
+                    <div class="details">
+                        <label>Full name :</label>
+                        <input type="text" placeholder="eg : John Doe" class="input-control" required/>
+                    </div>
+
+                    <div class="details">
+                        <label>Email :</label>
+                        <input type="email" placeholder="eg :  abc@xyz.com" id="int1" class="input-control" required/>
+                    </div>
+
+                    <div class="password-align">
+                        <div class="details">
+                            <label>Password :</label>
+                            <input type="password" placeholder="password" id="password" class="input-control password-policy" required/>
+                        </div>
+    
+                        <div class="details">
+                            <div class="password-details">
+                                <div class="password-intro">
+                                    <i class="fa-solid fa-lightbulb bulb"></i> <h4>Tips for Creating a Strong Password:</h4>
+                                </div>
+                                <ul class="password-rules" >
+                                    <li>Ensure your password is <span>at least 8 characters long.</span></li>
+                                    <li>Include <span>at least one alphanumeric character</span>(letter or digit).</li>
+                                    <li>Incorporate <span>at least one numerical digit.</span></li>
+                                    <li>Avoid using <span>spaces</span>within the password.</li>
+                                    <li>Use a mix of <span>upper</span> and <span>lowercase letters.</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="details">
+                        <label>Confirm Password :</label>
+                        <input type="password" placeholder="Enter your password again" id="confirm-password" class="input-control" required/>
+                    </div>
+    
+                    <button id="button" class="button-control butt2">Sign In</button>
+                </div>
+            </div>
+
+            <div  class="sign-in-card">
+                <div class="card-details">
+                    <h1> Welcome Back!</h1>
+                    <h3>Already have an account ?</h3>
+                    <button><a href="./logIn.html" >Log In</a></button>
+                </div>
+            </div>
+    
+        </div>
+
+
+    </form>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $('.password-policy').click(function(){
+            $('.password-details').addClass('password-details-slider');
+            $('.password-align').addClass('password-align-slider');
+            $('.sign-in-card').addClass('card-details-slider');
+        })
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+
+        // Password validation function
+        function validatePassword(password) {
+            const minLength = password.length >= 8;  // ✅ At least 8 characters
+            const hasLetter = /[a-zA-Z]/.test(password);  // ✅ At least one letter
+            const hasNumber = /[0-9]/.test(password);  // ✅ At least one number
+            const hasNoSpace = !/\s/.test(password);  // ✅ No spaces
+
+            return minLength && hasLetter && hasNumber && hasNoSpace;
+        }
+
+        document.getElementById('signup-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            let name = document.querySelector("input[placeholder='eg : John Doe']").value.trim();
+            let email = document.querySelector("input[placeholder='eg :  abc@xyz.com']").value.trim();
+            let password = document.querySelector("input[placeholder='password']").value.trim();
+            let confirmPassword = document.querySelector("input[placeholder='Enter your password again']").value.trim();
+
+            if (password !== confirmPassword) {
+                alert("Password and confirm password should match.");
+                    return;
+            }
+
+            if (!name || !email || !password || !confirmPassword) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            if (!validatePassword(password)) {
+                alert("Password does not meet the required criteria.");
+                return;
+            }
+
+            try{
+                let resp = await axios.post('http://localhost:3000/signup/sendInfo', {name, email, password, confirmPassword});
+                console.log(resp);
+                if(resp.data.message === "User created"){
+                    alert("The information you have provided meets all the required criteria.");
+                    window.location.href = '/mediconnect/logIn.html'; //Redirect to login page 
+                }
+
+            }catch(err){
+                if (err.response && err.response.data && err.response.data.message) { 
+                    alert(err.response.data.message); 
+                    console.log(err);
+                } else {
+                    alert("An unexpected error occurred.");
+                }
+            }
+        })
+    </script>
+</body>
+</html>
